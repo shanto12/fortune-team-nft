@@ -43,6 +43,7 @@ before(async () => {
     console.log(`Contract Address: ${[fortune.address]}`);
     console.log(`Owner Address: ${[fortune.signer.address]}`);
 
+
     user1 = fortune.connect(signers[1]);
     user2 = fortune.connect(signers[12]);
     user3 = fortune.connect(signers[17]);
