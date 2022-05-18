@@ -4,26 +4,31 @@ pragma solidity ^0.8.4;
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 import "@openzeppelin/contracts/security/Pausable.sol";
-import "@openzeppelin/contracts/access/Ownable.sol";
+//import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Burnable.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 
-contract FORTUNEExpeditionTeam2022 is ERC721, ERC721URIStorage, Pausable, Ownable, ERC721Burnable {
+contract FORTUNEExpeditionTeam2022 is ERC721, ERC721URIStorage, Pausable, ERC721Burnable {
     using Counters for Counters.Counter;
 
     Counters.Counter private _tokenIdCounter;
+    address public owner;
+    constructor() ERC721("FORTUNE! Expedition Team 2022", "FORT") {
+        owner=msg.sender;
+    }
 
-    constructor() ERC721("FORTUNE! Expedition Team 2022", "FORT") {}
-
-    function pause() public onlyOwner {
+    function pause() public {
+        onlyOwner();
         _pause();
     }
 
-    function unpause() public onlyOwner {
+    function unpause() public {
+        onlyOwner();
         _unpause();
     }
 
-    function safeMint(address to, string memory uri) public onlyOwner {
+    function safeMint(address to, string memory uri) public {
+        onlyOwner();
         uint256 tokenId = _tokenIdCounter.current();
         _tokenIdCounter.increment();
         _safeMint(to, tokenId);
@@ -41,6 +46,7 @@ contract FORTUNEExpeditionTeam2022 is ERC721, ERC721URIStorage, Pausable, Ownabl
     // The following functions are overrides required by Solidity.
 
     function _burn(uint256 tokenId) internal override(ERC721, ERC721URIStorage) {
+        onlyTokenOwner(tokenId);
         super._burn(tokenId);
     }
 
@@ -51,5 +57,29 @@ contract FORTUNEExpeditionTeam2022 is ERC721, ERC721URIStorage, Pausable, Ownabl
     returns (string memory)
     {
         return super.tokenURI(tokenId);
+    }
+    function onlyTokenOwner(uint256 _id) internal view {
+        require(
+            ownerOf(_id) == msg.sender,
+            "You are not the owner of this NFT."
+        );
+    }
+    function onlyOwner() internal view {
+        require(
+            msg.sender == owner,
+            "You are not the owner to call this function"
+        );
+    }
+    function getMintedCount() public view returns (uint256) {
+        return _tokenIdCounter.current();
+    }
+    function changeOwner(address _owner) external {
+        onlyOwner();
+        owner = _owner;
+    }
+    function setURI(uint256 _id, string memory _uri) external {
+        onlyOwner();
+        _setTokenURI(_id, _uri);
+//        emit URI(_uri, _id);
     }
 }
