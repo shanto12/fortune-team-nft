@@ -152,13 +152,16 @@ describe("burn Token", function () {
             await expect(contractUser1.burn(i-1)).to.be.revertedWith("ERC721Burnable: caller is not owner nor approved");
         }
     });
-    it("balanceOf token owner before burn", async function () {
+    it("balanceOf user2 before burn", async function () {
         expect(await fortune.balanceOf(user2.address)).to.be.equal(2);
     });
     it("Burn by owner", async function () {
         for (let i = 1; i <= 2; i++) {
             await expect(contractUser2.burn(i-1)).to.be.ok;
         }
+    });
+    it("balanceOf user2 after burn", async function () {
+        expect(await fortune.balanceOf(user2.address)).to.be.equal(0);
     });
 });
 
@@ -169,19 +172,19 @@ describe("transfer Token", function () {
             await expect(fortune.safeMint(user2.address, metadata_array[i - 1])).to.be.ok;
         }
     });
-
-    it("Burn by non owner", async function () {
-        for (let i = 1; i <= 2; i++) {
-            await expect(contractUser1.burn(i-1)).to.be.revertedWith("ERC721Burnable: caller is not owner nor approved");
-        }
-    });
-    it("balanceOf token owner before burn", async function () {
+    it("balanceOf token owner before transfer", async function () {
         expect(await fortune.balanceOf(user2.address)).to.be.equal(2);
     });
-    it("Burn by owner", async function () {
+    it("safeTransferFrom", async function () {
         for (let i = 1; i <= 2; i++) {
-            await expect(contractUser2.burn(i-1)).to.be.ok;
+            await expect(contractUser2.transferFrom(user2.address, user1.address, i-1)).to.be.ok;
         }
+    });
+    it("balanceOf user1 after transfer", async function () {
+        expect(await fortune.balanceOf(user1.address)).to.be.equal(2);
+    });
+    it("balanceOf user2 after transfer", async function () {
+        expect(await fortune.balanceOf(user2.address)).to.be.equal(0);
     });
 });
 
