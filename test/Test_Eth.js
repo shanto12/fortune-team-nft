@@ -15,9 +15,9 @@ let metadata_1 = "https://gateway.pinata.cloud/ipfs/QmSQ6E5dTgjgVchVdYX4CLfv2SrL
 let metadata_2 = "https://gateway.pinata.cloud/ipfs/QmW1ySEeL4tDJSa8N3ZT4GZNFbKxeAfZbFGca88N6aqhwZ";
 let metadata_array = [metadata_1, metadata_2]
 
-let user1;
-let user2;
-let user3;
+let contractUser1;
+let contractUser2;
+let contractOperator;
 
 before(async () => {
     allAddresses = [];
@@ -36,7 +36,7 @@ before(async () => {
 
     console.log("before executed.");
     // Use one of those accounts to deploy the contract
-    const Fortune = await ethers.getContractFactory("FORTUNE! Expedition Team 2022");
+    const Fortune = await ethers.getContractFactory("FORTUNEExpeditionTeam2022");
     fortune = await Fortune.deploy();
     await fortune.deployed();
     owner = fortune.signer.address;
@@ -44,9 +44,9 @@ before(async () => {
     console.log(`Owner Address: ${[fortune.signer.address]}`);
 
 
-    user1 = fortune.connect(signers[1]);
-    user2 = fortune.connect(signers[12]);
-    user3 = fortune.connect(signers[17]);
+    contractUser1 = fortune.connect(signers[1]);
+    contractUser2 = fortune.connect(signers[12]);
+    contractOperator = fortune.connect(signers[17]);
 
     console.log('******************************************************');
 });
@@ -55,34 +55,34 @@ describe("genericFunctions", function () {
     it("getMintedCount", async function () {
         expect(await fortune.getMintedCount()).to.equal(0);
     });
+    it("ownerOf", async function () {
+        expect(await fortune.ownerOf(1)).to.equal(0);
+    });
+    it("tokenURI", async function () {
+        expect(await fortune.tokenURI(1)).to.equal(0);
+    });
 });
 
-// describe("setURI", function () {
-//     it("Pause minting", async function () {
-//         expect(await fortune.pause());
-//     });
-//     it("First URI should be empty for all token IDs", async function () {
-//         for (let i = 0; i < supplies.length; i++) {
-//             expect(await fortune.uri(i + 1)).to.equal("");
-//         }
-//     });
-//     it("URI should be changed once it is set using setURI", async function () {
-//         for (let i = 0; i < supplies.length; i++) {
-//             expect(await fortune.setURI(i + 1, metadata_array[i]));
-//
-//             expect(await fortune.uri(i + 1)).to.equal(metadata_array[i]);
-//             expect(await fortune.uri(i + 1)).to.not.equal("");
-//         }
-//     });
-//     it("FAIL: non owner can't setURI", async function () {
-//         for (let i = 0; i < supplies.length; i++) {
-//             expect(await fortuneWhitelistedUser1.setURI(i + 1, metadata_array[i]));
-//
-//             expect(await fortune.uri(i + 1)).to.equal(metadata_array[i]);
-//             expect(await fortune.uri(i + 1)).to.not.equal("");
-//         }
-//     });
-// });
+describe("URI", function () {
+    it("First URI should be empty for all token IDs", async function () {
+        for (let i = 1; i <= 30; i++) {
+            expect(await fortune.tokenURI(i)).to.equal("");
+        }
+    });
+    it("URI should be changed once it is set using setURI", async function () {
+        for (let i = 1; i <= 2; i++) {
+            expect(await fortune.setURI(i, metadata_array[i-1]));
+
+            expect(await fortune.uri(i)).to.equal(metadata_array[i-1]);
+            expect(await fortune.uri(i)).to.not.equal("");
+        }
+    });
+    it("FAIL: non owner can't setURI", async function () {
+        for (let i = 1; i <= 30; i++) {
+            expect(await contractUser1.tokenURI(i)).to.be.reverted;
+        }
+    });
+});
 
 // describe("maxSupply", function () {
 //     let token1Supply = supplies[0];
