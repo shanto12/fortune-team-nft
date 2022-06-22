@@ -11,6 +11,7 @@ const {
   PRIVATE_KEY,
   RINKEBY_RPC_URL,
   MNEMONIC,
+  MAIN_WALLET,
 } = process.env;
 // This is a sample Hardhat task. To learn how to create your own go to
 // https://hardhat.org/guides/create-task.html
@@ -48,17 +49,18 @@ export default {
     hardhat: {},
     rinkeby: {
       url: RINKEBY_RPC_URL,
-      accounts: [PRIVATE_KEY],
+      accounts: [MAIN_WALLET],
     },
     mainnet: {
       url: MAINNET_RPC_URL,
 
-      accounts: [PRIVATE_KEY],
+      accounts: [MAIN_WALLET],
     },
   },
   etherscan: {
     apiKey: {
       rinkeby: ETHERSCAN_API_KEY,
+      mainnet: ETHERSCAN_API_KEY,
     },
     customChains: [
       {

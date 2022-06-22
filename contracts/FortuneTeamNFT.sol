@@ -8,7 +8,7 @@ import "./common/ERC2981.sol";
 import "./access/Ownable.sol";
 import "./libraries/Counters.sol";
 
-contract FORTUNEExpeditionTeam2022 is
+contract GenesisTeamFortuneHunter is
     ERC721,
     ERC2981,
     ERC721Enumerable,
@@ -16,7 +16,7 @@ contract FORTUNEExpeditionTeam2022 is
     Ownable
 {
     using Counters for Counters.Counter;
-    string private constant _name = "FORTUNE! Expedition Team 2022";
+    string private constant _name = "Genesis Team Fortune Hunter";
     string private constant _symbol = "FORT";
     uint96 public constant royaltyFees = 1000;
 

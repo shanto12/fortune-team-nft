@@ -29,18 +29,34 @@ const attributes = [
       display_type: "boost_number",
       trait_type: "Health",
       value: 150,
+      max_value: 350,
+    },
+    {
+      display_type: "boost_number",
+      trait_type: "Water Search Speed",
+      value: 130,
+      max_value: 150,
+    },
+    {
+      display_type: "boost_number",
+      trait_type: "Land Search Speed",
+      value: 130,
+      max_value: 150,
     },
     {
       trait_type: "Supply Burn Rate",
       value: 0.75,
+      max_value: 3,
     },
     {
       trait_type: "Gear Burn Rate",
       value: 0.8,
+      max_value: 3,
     },
     {
-      trait_type: "Earn Rate",
+      trait_type: "Base Earn Rate (BER)",
       value: 5,
+      max_value: 8,
     },
     {
       trait_type: "Sex",
@@ -149,18 +165,34 @@ const attributes = [
       display_type: "boost_number",
       trait_type: "Health",
       value: 150,
+      max_value: 350,
+    },
+    {
+      display_type: "boost_number",
+      trait_type: "Water Search Speed",
+      value: 130,
+      max_value: 150,
+    },
+    {
+      display_type: "boost_number",
+      trait_type: "Land Search Speed",
+      value: 130,
+      max_value: 150,
     },
     {
       trait_type: "Supply Burn Rate",
       value: 0.75,
+      max_value: 3,
     },
     {
       trait_type: "Gear Burn Rate",
       value: 0.8,
+      max_value: 3,
     },
     {
-      trait_type: "Earn Rate",
+      trait_type: "Base Earn Rate (BER)",
       value: 5,
+      max_value: 8,
     },
     {
       trait_type: "Sex",
@@ -269,18 +301,34 @@ const attributes = [
       display_type: "boost_number",
       trait_type: "Health",
       value: 150,
+      max_value: 350,
+    },
+    {
+      display_type: "boost_number",
+      trait_type: "Water Search Speed",
+      value: 130,
+      max_value: 150,
+    },
+    {
+      display_type: "boost_number",
+      trait_type: "Land Search Speed",
+      value: 130,
+      max_value: 150,
     },
     {
       trait_type: "Supply Burn Rate",
       value: 0.75,
+      max_value: 3,
     },
     {
       trait_type: "Gear Burn Rate",
       value: 0.8,
+      max_value: 3,
     },
     {
-      trait_type: "Earn Rate",
+      trait_type: "Base Earn Rate (BER)",
       value: 5,
+      max_value: 8,
     },
     {
       trait_type: "Sex",
@@ -365,34 +413,12 @@ const attributes = [
   ],
 ];
 const images = [
-  "./images/peter.png",
-  "./images/alexander.png",
-  "./images/ryan.png",
+  "./images/1.png",
+  "./images/2.png",
+  "./images/3.png",
 ];
 
-const nft_ipfs_cids: any[] = [
-  {
-    peter_metadata:
-      "https://ipfs.io/ipfs/bafybeibz73i7hbl63gsvmgxg54q7qaalxf66n7ptqvmnroc2v45ql3zr54/fortune-team-collection.json",
-
-    peter_image:
-      "https://ipfs.io/ipfs/bafybeiai4nkjnrxvs6avnumrniupgn2qhrthfe7lahdqw7zokz6nmsnqpu/peter.png",
-  },
-  {
-    alex_metadata:
-      "https://ipfs.io/ipfs/bafybeiauuj3etzsdzuge23zv347iusgtlwmqu3r3xe4t3sdwknms7aalh4/fortune-team-collection.json",
-
-    alex_image:
-      "https://ipfs.io/ipfs/bafybeibigm6fz4ad4rfniiorycuabo6wgxryonfxjv7dwk6us3g5emh4ze/alexander.png",
-  },
-  {
-    ryan_metadata:
-      "https://ipfs.io/ipfs/bafybeiboekpngavuemvl2zgcbzni2lwy3mdy6vrsh656gikec7pd3nte7a/fortune-team-collection.json",
-
-    ryan_image:
-      "https://ipfs.io/ipfs/bafybeicv7bo4cyebxc3smrpnkt4yo2x5rubki7nbswpee7q5wmyu5fxnt4/ryan.png",
-  },
-];
+const nft_ipfs_cids: any[] = [];
 
 const makeNFTMetadata = async () => {
   for (let index = 0; index < images.length; index++) {
@@ -405,7 +431,7 @@ const makeNFTMetadata = async () => {
     const avatarCid = await storeData([avatar]);
     const data = {
       image: `ipfs://${avatarCid}/${path.basename(imgPath)}`,
-      name: names[index],
+      name: `Genesis Team Fortune Hunter #${[index + 1]}`,
       description,
       attributes: attributes[index],
     };
@@ -419,6 +445,11 @@ const makeNFTMetadata = async () => {
   }
   console.log({ nft_ipfs_cids });
 };
-makeNFTMetadata();
+makeNFTMetadata()
+  .then(() => process.exit(0))
+  .catch((e) => {
+    console.error(e);
+    process.exit(1);
+  });
 
 // export {};
