@@ -6,6 +6,12 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "scripts": {
+    "test": "npx hardhat test",
+    "compile": "npx hardhat compile",
+    "lint": "solhint --fix contracts/**/*.sol",
+    "coverage": "npx hardhat coverage"
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",
