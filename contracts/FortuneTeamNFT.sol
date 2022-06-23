@@ -20,12 +20,24 @@ contract GenesisTeamFortuneHunter is
     string private constant _symbol = "FORT";
     uint96 public constant royaltyFees = 1000;
 
+    mapping(address => bool) public isMinter;
     Counters.Counter private _tokenIdCounter;
 
-    constructor() ERC721(_name, _symbol) {}
+    constructor(address fortuneWallet) ERC721(_name, _symbol) {
+        isMinter[msg.sender] = isMinter[fortuneWallet] = true;
+    }
+
+    function onlyMinter() private view {
+        require(isMinter[msg.sender], "not minter");
+    }
+
+    function setMinter(address minter, bool status) external {
+        onlyOwner();
+        isMinter[minter] = status;
+    }
 
     function safeMint(address to, string calldata uri) external {
-        onlyOwner();
+        onlyMinter();
         _tokenIdCounter.increment();
         uint256 tokenId = _tokenIdCounter.current();
         _safeMint(to, tokenId);
@@ -33,9 +45,14 @@ contract GenesisTeamFortuneHunter is
         _setTokenURI(tokenId, uri);
     }
 
-    function burn(uint256 tokenId) public {
-        onlyOwner();
+    function burn(uint256 tokenId) external {
+        onlyMinter();
         _burn(tokenId);
+    }
+
+    function setTokenURI(uint256 tokenId, string calldata uri) external {
+        onlyMinter();
+        _setTokenURI(tokenId, uri);
     }
 
     // The following functions are overrides required by Solidity.
