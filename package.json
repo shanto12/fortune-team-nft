@@ -7,7 +7,8 @@
     "test": "npx hardhat test",
     "compile": "npx hardhat compile",
     "lint": "solhint --fix contracts/**/*.sol",
-    "coverage": "npx hardhat coverage"
+    "coverage": "npx hardhat coverage",
+    "deploy":"npx hardhat run --network mainnet scripts/deploy.ts"
   },
   "keywords": [],
   "author": "",
@@ -29,6 +30,7 @@
   },
   "dependencies": {
     "@openzeppelin/contracts": "^4.6.0",
+    "csv-parser": "^3.0.0",
     "dotenv": "^16.0.1"
   }
 }

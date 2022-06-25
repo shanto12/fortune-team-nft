@@ -23,7 +23,7 @@ contract GenesisTeamFortuneHunter is
     mapping(address => bool) public isMinter;
     Counters.Counter private _tokenIdCounter;
 
-    constructor(address fortuneWallet) ERC721(_name, _symbol) {
+    constructor(address fortuneWallet)  ERC721(_name, _symbol) {
         isMinter[msg.sender] = isMinter[fortuneWallet] = true;
     }
 

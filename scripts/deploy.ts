@@ -11,7 +11,9 @@ async function main() {
 
   // We get the contract to deploy
   const TeamNFT = await hre.ethers.getContractFactory("GenesisTeamFortuneHunter");
-  const teamNFT = await TeamNFT.deploy();
+  const teamNFT = await TeamNFT.deploy(
+    
+  );
 
   await teamNFT.deployed();
 
