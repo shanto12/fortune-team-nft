@@ -5,12 +5,14 @@ import "./ERC721/ERC721.sol";
 import "./ERC721//ERC721Enumerable.sol";
 import "./ERC721/ERC721URIStorage.sol";
 import "./common/ERC2981.sol";
+import "./common/EIP712.sol";
 import "./access/Ownable.sol";
 import "./libraries/Counters.sol";
 
 contract GenesisTeamFortuneHunter is
     ERC721,
     ERC2981,
+    EIP712,
     ERC721Enumerable,
     ERC721URIStorage,
     Ownable
@@ -18,12 +20,14 @@ contract GenesisTeamFortuneHunter is
     using Counters for Counters.Counter;
     string private constant _name = "Genesis Team Fortune Hunter";
     string private constant _symbol = "FORT";
-    uint96 public constant royaltyFees = 1000;
+    string public constant version = "1.0.1";
+    uint96 public royaltyFees = 1000;
 
+    mapping(address => uint256) public nonces;
     mapping(address => bool) public isMinter;
-    Counters.Counter private _tokenIdCounter;
+    // Counters.Counter private _tokenIdCounter;
 
-    constructor(address fortuneWallet)  ERC721(_name, _symbol) {
+    constructor(address fortuneWallet)  ERC721(_name, _symbol) EIP712(_name, version){
         isMinter[msg.sender] = isMinter[fortuneWallet] = true;
     }
 
@@ -36,10 +40,38 @@ contract GenesisTeamFortuneHunter is
         isMinter[minter] = status;
     }
 
-    function safeMint(address to, string calldata uri) external {
+ bytes32 private constant MINT_STRUCT_HASH =
+        keccak256(
+            "SafeMintWithSig(address to,uint256 tokenId,string uri,uint256 nonce)"
+        );
+    
+    function safeMintWithSig(
+        address signatory,
+        address to,
+        uint256 tokenId,
+        string calldata uri,
+        uint8 v,
+        bytes32 r,
+        bytes32 s
+    ) external {
+        bytes32 hash = keccak256(
+            abi.encode(
+                MINT_STRUCT_HASH,
+                to,
+                tokenId,
+                keccak256(bytes(uri)),
+                ++nonces[signatory]
+            )
+        );
+        address signer = ECDSA.recover(_hashTypedDataV4(hash), v, r, s);
+        require(isMinter[signer] && signer==signatory, "unauthorized signer");
+        _safeMint(to, tokenId);
+        _setTokenRoyalty(tokenId, feesReceiver(), royaltyFees);
+        _setTokenURI(tokenId, uri);
+    }
+
+    function safeMint(address to, uint256 tokenId, string calldata uri) external {
         onlyMinter();
-        _tokenIdCounter.increment();
-        uint256 tokenId = _tokenIdCounter.current();
         _safeMint(to, tokenId);
         _setTokenRoyalty(tokenId, feesReceiver(), royaltyFees);
         _setTokenURI(tokenId, uri);
@@ -53,6 +85,11 @@ contract GenesisTeamFortuneHunter is
     function setTokenURI(uint256 tokenId, string calldata uri) external {
         onlyMinter();
         _setTokenURI(tokenId, uri);
+    }
+
+    function setRoyaltyFees(uint96 fees) external{
+        onlyOwner();
+        royaltyFees = fees;
     }
 
     // The following functions are overrides required by Solidity.
