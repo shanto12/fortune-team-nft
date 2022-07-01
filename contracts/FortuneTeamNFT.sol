@@ -7,7 +7,6 @@ import "./ERC721/ERC721URIStorage.sol";
 import "./common/ERC2981.sol";
 import "./common/EIP712.sol";
 import "./access/Ownable.sol";
-import "./libraries/Counters.sol";
 
 contract GenesisTeamFortuneHunter is
     ERC721,
@@ -17,15 +16,14 @@ contract GenesisTeamFortuneHunter is
     ERC721URIStorage,
     Ownable
 {
-    using Counters for Counters.Counter;
     string private constant _name = "Genesis Team Fortune Hunter";
     string private constant _symbol = "FORT";
     string public constant version = "1.0.1";
     uint96 public royaltyFees = 1000;
 
+    mapping(uint256 => bool) public usedTokenId;
     mapping(address => uint256) public nonces;
     mapping(address => bool) public isMinter;
-    // Counters.Counter private _tokenIdCounter;
 
     constructor(address fortuneWallet)  ERC721(_name, _symbol) EIP712(_name, version){
         isMinter[msg.sender] = isMinter[fortuneWallet] = true;
@@ -64,6 +62,7 @@ contract GenesisTeamFortuneHunter is
             )
         );
         address signer = ECDSA.recover(_hashTypedDataV4(hash), v, r, s);
+        _setTokenIdState(tokenId);        
         require(isMinter[signer] && signer==signatory, "unauthorized signer");
         _safeMint(to, tokenId);
         _setTokenRoyalty(tokenId, feesReceiver(), royaltyFees);
@@ -72,9 +71,15 @@ contract GenesisTeamFortuneHunter is
 
     function safeMint(address to, uint256 tokenId, string calldata uri) external {
         onlyMinter();
+        _setTokenIdState(tokenId);
         _safeMint(to, tokenId);
         _setTokenRoyalty(tokenId, feesReceiver(), royaltyFees);
         _setTokenURI(tokenId, uri);
+    }
+
+    function _setTokenIdState(uint256 tokenId)private{
+        require(!usedTokenId[tokenId], "tokenId in use");
+        usedTokenId[tokenId]=true;
     }
 
     function burn(uint256 tokenId) external {
